@@ -21,10 +21,9 @@ def start(message):
     markup.add(webapp_button)
     bot.send_message(
         message.chat.id,
-        "📱 Добро пожаловать в магазин <b>EKRAN.TJ-KBS</b>!
+        """📱 Добро пожаловать в магазин <b>EKRAN.TJ-KBS</b>!
 
-"
-        "🛍 Нажмите кнопку ниже, чтобы открыть каталог экранов и выбрать нужную модель и качество:",
+🛍 Нажмите кнопку ниже, чтобы открыть каталог экранов и выбрать нужную модель и качество:""",
         reply_markup=markup,
         parse_mode='HTML'
     )
@@ -45,14 +44,9 @@ def handle_web_app_data(message):
             qty = int(item["quantity"])
             item_total = price * qty
             total += item_total
-            items_text += f"📦 {name} | {quality} | {price} x {qty} = {item_total} сомонӣ
-"
+            items_text += f"📦 {name} | {quality} | {price} x {qty} = {item_total} сомонӣ\n"
 
-        user_msg = f"✅ <b>Ваш заказ принят!</b>
-
-{items_text}
-💵 <b>Общая сумма: {total} сомонӣ</b>
-📲 Мы скоро свяжемся!"
+        user_msg = f"✅ <b>Ваш заказ принят!</b>\n\n{items_text}\n💵 <b>Общая сумма: {total} сомонӣ</b>\n📲 Мы скоро свяжемся!"
         bot.send_message(message.chat.id, user_msg, parse_mode="HTML")
 
         admin_msg = f"""📥 <b>Новый заказ</b>
