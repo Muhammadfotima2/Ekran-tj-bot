@@ -1,18 +1,23 @@
 import telebot
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton, WebAppInfo
+from datetime import datetime
 
-# 🔐 Токен Telegram-бота
+# ✅ Ваш токен
 TOKEN = '7861896848:AAHJk1QcelFZ1owB0LO4XXNFflBz-WDZBIE'
 bot = telebot.TeleBot(TOKEN)
 
-# 🚀 /start — Кнопка WebApp
+# 🔐 Telegram ID администратора (замени на свой!)
+ADMIN_ID = 6172156061
+
+# 🔹 Кнопка WebApp при /start
 @bot.message_handler(commands=['start'])
 def start(message):
     markup = ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.add(KeyboardButton(
+    webapp_button = KeyboardButton(
         text='📲 Открыть каталог',
         web_app=WebAppInfo(url='https://muhammadfotima2.github.io/ekran-webapp/')
-    ))
+    )
+    markup.add(webapp_button)
     bot.send_message(
         message.chat.id,
         "📱 Добро пожаловать в магазин <b>EKRAN.TJ-KBS</b>!\n\n"
@@ -21,23 +26,42 @@ def start(message):
         parse_mode='HTML'
     )
 
-# 📦 Обработка заказа из WebApp
+# 🛒 Обработка заказа
 @bot.message_handler(content_types=['web_app_data'])
 def handle_web_app_data(message):
     data = message.web_app_data.data.strip()
     try:
         model, quality, price = [part.strip() for part in data.split('|')]
-        text = (
-            "✅ <b>Заказ получен!</b>\n\n"
-            f"📱 <b>Модель:</b> {model}\n"
-            f"🛠 <b>Качество:</b> {quality}\n"
-            f"💰 <b>Цена:</b> {price}\n\n"
-            "📲 Мы с Вами скоро свяжемся!"
-        )
+
+        # Формируем сообщение для пользователя
+        response = f"""
+✅ <b>Заказ принят!</b>
+
+📱 <b>Модель:</b> {model}
+🛠 <b>Качество:</b> {quality}
+💰 <b>Цена:</b> {price}
+
+📲 Мы с вами скоро свяжемся!
+        """
+        bot.send_message(message.chat.id, response, parse_mode="HTML")
+
+        # Формируем сообщение для администратора
+        admin_msg = f"""
+📥 <b>Новый заказ</b>
+
+👤 Имя: {message.from_user.first_name}
+🔗 Username: @{message.from_user.username or '—'}
+🆔 ID: <code>{message.from_user.id}</code>
+🕓 Дата: {datetime.now().strftime('%d.%m.%Y %H:%M')}
+
+📱 Модель: <b>{model}</b>
+🛠 Качество: <b>{quality}</b>
+💰 Цена: <b>{price}</b>
+        """
+        bot.send_message(ADMIN_ID, admin_msg, parse_mode="HTML")
+
     except Exception as e:
-        text = f"⚠️ Ошибка при обработке заказа: {e}"
+        bot.send_message(message.chat.id, f"⚠️ Ошибка при обработке: {e}")
 
-    bot.send_message(message.chat.id, text, parse_mode='HTML')
-
-# 🔁 Запуск бота
+# 🔁 Старт бота
 bot.infinity_polling()
