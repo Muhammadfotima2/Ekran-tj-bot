@@ -1,19 +1,18 @@
 import telebot
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton, WebAppInfo
 
-# ✅ Токен бота
+# 🔐 Токен Telegram-бота
 TOKEN = '7861896848:AAHJk1QcelFZ1owB0LO4XXNFflBz-WDZBIE'
 bot = telebot.TeleBot(TOKEN)
 
-# 🔹 Команда /start — отправка кнопки WebApp
+# 🚀 /start — Кнопка WebApp
 @bot.message_handler(commands=['start'])
 def start(message):
     markup = ReplyKeyboardMarkup(resize_keyboard=True)
-    webapp_button = KeyboardButton(
+    markup.add(KeyboardButton(
         text='📲 Открыть каталог',
         web_app=WebAppInfo(url='https://muhammadfotima2.github.io/ekran-webapp/')
-    )
-    markup.add(webapp_button)
+    ))
     bot.send_message(
         message.chat.id,
         "📱 Добро пожаловать в магазин <b>EKRAN.TJ-KBS</b>!\n\n"
@@ -22,26 +21,23 @@ def start(message):
         parse_mode='HTML'
     )
 
-# ✅ Обработка данных из WebApp
+# 📦 Обработка заказа из WebApp
 @bot.message_handler(content_types=['web_app_data'])
 def handle_web_app_data(message):
     data = message.web_app_data.data.strip()
     try:
         model, quality, price = [part.strip() for part in data.split('|')]
-
-        response = f"""
-✅ <b>Заказ получен!</b>
-
-📱 <b>Модель:</b> {model}
-🛠 <b>Качество:</b> {quality}
-💰 <b>Цена:</b> {price}
-
-📲 Скоро с Вами свяжемся!
-        """
+        text = (
+            "✅ <b>Заказ получен!</b>\n\n"
+            f"📱 <b>Модель:</b> {model}\n"
+            f"🛠 <b>Качество:</b> {quality}\n"
+            f"💰 <b>Цена:</b> {price}\n\n"
+            "📲 Мы с Вами скоро свяжемся!"
+        )
     except Exception as e:
-        response = f"⚠️ Ошибка при обработке заказа: {e}"
+        text = f"⚠️ Ошибка при обработке заказа: {e}"
 
-    bot.send_message(message.chat.id, response, parse_mode="HTML")
+    bot.send_message(message.chat.id, text, parse_mode='HTML')
 
 # 🔁 Запуск бота
 bot.infinity_polling()
