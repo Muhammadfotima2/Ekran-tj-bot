@@ -19,7 +19,11 @@ def start(message):
     )
     bot.send_message(
         message.chat.id,
-        "📱 Добро пожаловать в магазин EKRAN.TJ-KBS!\nВыберите качество экрана:",
+        """📱 <b>ХУШ ОМАДЕД БА МАГАЗИНИ EKRAN.TJ-KBS</b>
+🛠 <i>Мо экранҳои беҳтаринро барои iPhone, Samsung ва дигар брендҳо пешкаш мекунем</i>
+👇 <b>Модел ё сифати экранро интихоб намоед:</b>
+
+📦 Original – заводской  💡 OLED – равшантар  🧩 Incell – дастрас""",
         reply_markup=markup
     )
 
