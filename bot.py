@@ -1,10 +1,12 @@
-
 import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import sqlite3
 
 TOKEN = '7861896848:AAHJk1QcelFZ1owB0LO4XXNFflBz-WDZBIE'
 bot = telebot.TeleBot(TOKEN)
+
+# Удаляем webhook перед запуском polling
+bot.remove_webhook()
 
 # /start — главное меню
 @bot.message_handler(commands=['start'])
@@ -58,7 +60,7 @@ def show_product(call):
         markup.add(InlineKeyboardButton("🛒 Заказать", callback_data=f"order_{prod_id}"))
         bot.send_photo(call.message.chat.id, photo=photo_url, caption=text, parse_mode='HTML', reply_markup=markup)
 
-# Обработка заказа
+# Заказ
 @bot.callback_query_handler(func=lambda call: call.data.startswith("order_"))
 def handle_order(call):
     bot.send_message(
