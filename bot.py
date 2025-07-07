@@ -31,7 +31,7 @@ def start(message):
 def handle_web_app_data(message):
     data = message.web_app_data.data.strip()
     try:
-        model, quality, price = [part.strip() for part in data.split('|')]
+        model, quality, price, quantity = [part.strip() for part in data.split('|')]
 
         # Формируем сообщение для пользователя
         response = f"""
@@ -40,6 +40,7 @@ def handle_web_app_data(message):
 📱 <b>Модель:</b> {model}
 🛠 <b>Качество:</b> {quality}
 💰 <b>Цена:</b> {price}
+📦 <b>Количество:</b> {quantity}
 
 📲 Мы с вами скоро свяжемся!
         """
@@ -57,6 +58,7 @@ def handle_web_app_data(message):
 📱 Модель: <b>{model}</b>
 🛠 Качество: <b>{quality}</b>
 💰 Цена: <b>{price}</b>
+📦 Количество: <b>{quantity}</b>
         """
         bot.send_message(ADMIN_ID, admin_msg, parse_mode="HTML")
 
