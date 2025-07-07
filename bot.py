@@ -11,8 +11,10 @@ def start_message(message):
 
 @app.route('/', methods=['POST'])
 def webhook():
+    print("Webhook called")  # <-- добавляем для отладки
     if request.headers.get('content-type') == 'application/json':
         json_string = request.get_data().decode('utf-8')
+        print("Payload:", json_string)  # <-- сюда Telegram будет присылать данные
         update = telebot.types.Update.de_json(json_string)
         bot.process_new_updates([update])
         return '', 200
