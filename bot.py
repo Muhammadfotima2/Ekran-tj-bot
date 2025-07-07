@@ -1,12 +1,12 @@
 
 import telebot
-from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton, InputMediaPhoto
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import sqlite3
 
 TOKEN = '7861896848:AAHJk1QcelFZ1owB0LO4XXNFflBz-WDZBIE'
 bot = telebot.TeleBot(TOKEN)
 
-# Старт
+# /start — главное меню
 @bot.message_handler(commands=['start'])
 def start(message):
     markup = InlineKeyboardMarkup()
@@ -15,10 +15,10 @@ def start(message):
         InlineKeyboardButton("💡 OLED", callback_data="cat_Oled"),
         InlineKeyboardButton("🧩 Incell", callback_data="cat_Incell")
     )
-    bot.send_message(message.chat.id, "📱 Добро пожаловать в каталог Samsung!
+    bot.send_message(message.chat.id, "📱 Добро пожаловать в магазин EKRAN.TJ-KBS!
 Выберите качество экрана:", reply_markup=markup)
 
-# Обработка выбора категории
+# Категория → список моделей
 @bot.callback_query_handler(func=lambda call: call.data.startswith("cat_"))
 def show_models(call):
     quality = call.data.split("_")[1]
@@ -31,9 +31,9 @@ def show_models(call):
     markup = InlineKeyboardMarkup()
     for item in items:
         markup.add(InlineKeyboardButton(item[1], callback_data=f"prod_{item[0]}"))
-    bot.edit_message_text(f"🔍 Модели с качеством: {quality}", call.message.chat.id, call.message.message_id, reply_markup=markup)
+    bot.edit_message_text(f"📦 Модели с качеством: {quality}", call.message.chat.id, call.message.message_id, reply_markup=markup)
 
-# Обработка выбора модели
+# Модель → подробности
 @bot.callback_query_handler(func=lambda call: call.data.startswith("prod_"))
 def show_product(call):
     prod_id = call.data.split("_")[1]
@@ -48,12 +48,12 @@ def show_product(call):
         text = f"📱 <b>{model}</b>\n🛠 Качество: {quality}\n🏷 Бренд: {brand}\n💰 Цена: {price} сомонӣ"
         markup = InlineKeyboardMarkup()
         markup.add(InlineKeyboardButton("🛒 Заказать", callback_data=f"order_{prod_id}"))
-        with open(photo_url, 'rb') as photo:
-            bot.send_photo(call.message.chat.id, photo, caption=text, parse_mode='HTML', reply_markup=markup)
+        bot.send_photo(call.message.chat.id, photo=photo_url, caption=text, parse_mode='HTML', reply_markup=markup)
 
-# Обработка заказа
+# Обработка заказа (заглушка)
 @bot.callback_query_handler(func=lambda call: call.data.startswith("order_"))
 def handle_order(call):
-    bot.send_message(call.message.chat.id, "📦 Напишите, пожалуйста, ваше имя, телефон и количество товара:")
+    bot.send_message(call.message.chat.id, "📦 Напишите, пожалуйста, ваше имя, номер телефона и количество товара. Мы скоро с вами свяжемся!")
 
-bot.polling
+bot.polling()
+
