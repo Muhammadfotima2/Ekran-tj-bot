@@ -16,10 +16,11 @@ def start(message):
         InlineKeyboardButton("📱 Redmi", callback_data="brand_Redmi"),
         InlineKeyboardButton("📱 Infinix", callback_data="brand_Infinix")
     )
+    welcome_text = """📱 <b>ХУШ ОМАДЕД БА EKRAN.TJ-KBS</b>
+👇 <b>Маркаи телефони худро интихоб намоед:</b>"""
     bot.send_message(
         message.chat.id,
-        "📱 <b>ХУШ ОМАДЕД БА EKRAN.TJ-KBS</b>
-👇 <b>Маркаи телефони худро интихоб намоед:</b>",
+        welcome_text,
         reply_markup=markup,
         parse_mode='HTML'
     )
