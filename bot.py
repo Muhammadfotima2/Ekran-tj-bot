@@ -36,11 +36,13 @@ def choose_quality(call):
             InlineKeyboardButton("💡 OLED", callback_data="cat_Samsung_Oled"),
             InlineKeyboardButton("🧩 Incell", callback_data="cat_Samsung_Incell")
         )
+        quality_text = """🔧 <b>Мо экранҳои Samsung дорем
+бо сифатҳои зерин:</b>
+Интихоб кунед ⬇️"""
         bot.edit_message_text(
             chat_id=call.message.chat.id,
             message_id=call.message.message_id,
-            text="🔧 <b>Мо экранҳои Samsung дорем бо сифатҳои зерин:</b>
-Интихоб кунед ⬇️",
+            text=quality_text,
             reply_markup=markup,
             parse_mode='HTML'
         )
