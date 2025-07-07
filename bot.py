@@ -2,14 +2,10 @@ import telebot
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton, WebAppInfo
 from datetime import datetime
 
-# ✅ Ваш токен
 TOKEN = '7861896848:AAHJk1QcelFZ1owB0LO4XXNFflBz-WDZBIE'
 bot = telebot.TeleBot(TOKEN)
-
-# 🔐 Telegram ID администратора (замени на свой!)
 ADMIN_ID = 6172156061
 
-# 🔹 Кнопка WebApp при /start
 @bot.message_handler(commands=['start'])
 def start(message):
     markup = ReplyKeyboardMarkup(resize_keyboard=True)
@@ -20,33 +16,34 @@ def start(message):
     markup.add(webapp_button)
     bot.send_message(
         message.chat.id,
-        "📱 Добро пожаловать в магазин <b>EKRAN.TJ-KBS</b>!\n\n"
+        "📱 Добро пожаловать в магазин <b>EKRAN.TJ-KBS</b>!
+
+"
         "🛍 Нажмите кнопку ниже, чтобы открыть каталог экранов и выбрать нужную модель и качество:",
         reply_markup=markup,
         parse_mode='HTML'
     )
 
-# 🛒 Обработка заказа
 @bot.message_handler(content_types=['web_app_data'])
 def handle_web_app_data(message):
     data = message.web_app_data.data.strip()
     try:
-        model, quality, price, quantity = [part.strip() for part in data.split('|')]
+        model, quality, brand, price, qty, total = [part.strip() for part in data.split('|')]
 
-        # Формируем сообщение для пользователя
-        response = f"""
+        user_msg = f"""
 ✅ <b>Заказ принят!</b>
 
 📱 <b>Модель:</b> {model}
 🛠 <b>Качество:</b> {quality}
-💰 <b>Цена:</b> {price}
-📦 <b>Количество:</b> {quantity}
+🏷 <b>Бренд:</b> {brand}
+💰 <b>Цена за 1шт:</b> {price}
+🔢 <b>Количество:</b> {qty}
+💵 <b>Итого:</b> {total} сомонӣ
 
 📲 Мы с вами скоро свяжемся!
         """
-        bot.send_message(message.chat.id, response, parse_mode="HTML")
+        bot.send_message(message.chat.id, user_msg, parse_mode="HTML")
 
-        # Формируем сообщение для администратора
         admin_msg = f"""
 📥 <b>Новый заказ</b>
 
@@ -57,13 +54,14 @@ def handle_web_app_data(message):
 
 📱 Модель: <b>{model}</b>
 🛠 Качество: <b>{quality}</b>
-💰 Цена: <b>{price}</b>
-📦 Количество: <b>{quantity}</b>
+🏷 Бренд: <b>{brand}</b>
+💰 Цена за 1шт: <b>{price}</b>
+🔢 Кол-во: <b>{qty}</b>
+💵 Сумма: <b>{total} сомонӣ</b>
         """
         bot.send_message(ADMIN_ID, admin_msg, parse_mode="HTML")
 
     except Exception as e:
         bot.send_message(message.chat.id, f"⚠️ Ошибка при обработке: {e}")
 
-# 🔁 Старт бота
 bot.infinity_polling()
