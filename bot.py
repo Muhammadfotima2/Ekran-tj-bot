@@ -1,48 +1,59 @@
+
 import telebot
-from telebot import types
-from flask import Flask, request
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton, InputMediaPhoto
+import sqlite3
 
-API_TOKEN = '7861896848:AAHJk1QcelFZ1owB0LO4XXNFflBz-WDZBIE'
-bot = telebot.TeleBot(API_TOKEN)
-app = Flask(__name__)
+TOKEN = '7861896848:AAHJk1QcelFZ1owB0LO4XXNFflBz-WDZBIE'
+bot = telebot.TeleBot(TOKEN)
 
-# Каталог товаров (пример)
-catalog = {
-    "Samsung": ["Samsung A10", "Samsung A20", "Samsung A30"],
-    "iPhone": ["iPhone 11", "iPhone 12", "iPhone 13"]
-}
-
+# Старт
 @bot.message_handler(commands=['start'])
-def send_welcome(message):
-    markup = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
-    btn1 = types.KeyboardButton('📱 Samsung')
-    btn2 = types.KeyboardButton('🍎 iPhone')
-    markup.add(btn1, btn2)
-    welcome_text = "Хуш омадед ба Магазини EKRAN.TJ-KBS! \nЛутфан категорияро интихоб кунед:"
-    bot.send_message(message.chat.id, welcome_text, reply_markup=markup)
+def start(message):
+    markup = InlineKeyboardMarkup()
+    markup.row(
+        InlineKeyboardButton("📦 Original", callback_data="cat_Original"),
+        InlineKeyboardButton("💡 OLED", callback_data="cat_Oled"),
+        InlineKeyboardButton("🧩 Incell", callback_data="cat_Incell")
+    )
+    bot.send_message(message.chat.id, "📱 Добро пожаловать в каталог Samsung!
+Выберите качество экрана:", reply_markup=markup)
 
-@bot.message_handler(func=lambda message: True)
-def handle_message(message):
-    text = message.text
-    if text in catalog:
-        items = catalog[text]
-        response = f"Категория: {text}\nМаҳсулотҳо:\n" + "\n".join(items)
-        bot.send_message(message.chat.id, response)
-    else:
-        bot.send_message(message.chat.id, "Лутфан категорияро интихоб кунед ё /start фармонро истифода баред.")
+# Обработка выбора категории
+@bot.callback_query_handler(func=lambda call: call.data.startswith("cat_"))
+def show_models(call):
+    quality = call.data.split("_")[1]
+    conn = sqlite3.connect("telegram_catalog.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, model FROM samsung_catalog WHERE quality=?", (quality,))
+    items = cursor.fetchall()
+    conn.close()
 
-@app.route('/', methods=['POST'])
-def webhook():
-    if request.headers.get('content-type') == 'application/json':
-        json_string = request.get_data().decode('utf-8')
-        update = telebot.types.Update.de_json(json_string)
-        bot.process_new_updates([update])
-        return '', 200
-    return 'Unsupported content type', 403
+    markup = InlineKeyboardMarkup()
+    for item in items:
+        markup.add(InlineKeyboardButton(item[1], callback_data=f"prod_{item[0]}"))
+    bot.edit_message_text(f"🔍 Модели с качеством: {quality}", call.message.chat.id, call.message.message_id, reply_markup=markup)
 
-@app.route('/', methods=['GET'])
-def index():
-    return '✅ Webhook приложение работает!'
+# Обработка выбора модели
+@bot.callback_query_handler(func=lambda call: call.data.startswith("prod_"))
+def show_product(call):
+    prod_id = call.data.split("_")[1]
+    conn = sqlite3.connect("telegram_catalog.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT model, quality, brand, price, photo_url FROM samsung_catalog WHERE id=?", (prod_id,))
+    result = cursor.fetchone()
+    conn.close()
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    if result:
+        model, quality, brand, price, photo_url = result
+        text = f"📱 <b>{model}</b>\n🛠 Качество: {quality}\n🏷 Бренд: {brand}\n💰 Цена: {price} сомонӣ"
+        markup = InlineKeyboardMarkup()
+        markup.add(InlineKeyboardButton("🛒 Заказать", callback_data=f"order_{prod_id}"))
+        with open(photo_url, 'rb') as photo:
+            bot.send_photo(call.message.chat.id, photo, caption=text, parse_mode='HTML', reply_markup=markup)
+
+# Обработка заказа
+@bot.callback_query_handler(func=lambda call: call.data.startswith("order_"))
+def handle_order(call):
+    bot.send_message(call.message.chat.id, "📦 Напишите, пожалуйста, ваше имя, телефон и количество товара:")
+
+bot.polling
