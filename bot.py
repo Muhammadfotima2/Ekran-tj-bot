@@ -2,7 +2,7 @@ import telebot
 from telebot import types
 
 TOKEN = '7861896848:AAHJk1QcelFZ1owB0LO4XXNFflBz-WDZBIE'
-WEBAPP_URL = 'https://ekran-tj-admin.up.railway.app'  # Адрес твоей админ-панели
+WEBAPP_URL = 'https://web-production-d190f.up.railway.app'  # Адрес твоей админ-панели
 
 bot = telebot.TeleBot(TOKEN, parse_mode='HTML')
 
