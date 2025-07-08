@@ -6,25 +6,21 @@ bot = telebot.TeleBot(TOKEN, parse_mode='HTML')
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    # Кнопка WebApp
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    webapp_button = types.KeyboardButton(
-        text="📱 Открыть каталог",
-        web_app=types.WebAppInfo(url="https://yourwebapp.railway.app/")  # ЗАМЕНИ на свою ссылку
-    )
-    markup.add(webapp_button)
+    web_app = types.WebAppInfo(url='https://angelic-gratitude-production.up.railway.app')
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.add(types.KeyboardButton(text="📲 Открыть каталог", web_app=web_app))
 
     bot.send_message(
         message.chat.id,
-        "Добро пожаловать в EKRAN.TJ-KBS!\n\n"
-        "Нажмите кнопку ниже, чтобы открыть каталог и оформить заказ:",
-        reply_markup=markup
+        "Добро пожаловать в <b>EKRAN.TJ-KBS</b>!\n\n📱 Вы можете выбрать модели и оформить заказ через WebApp-каталог.",
+        reply_markup=keyboard
     )
 
 @bot.message_handler(content_types=['web_app_data'])
 def handle_webapp(message):
     data = message.web_app_data.data
 
+    # Добавляем иконки банков в сообщение
     html_message = data.replace(
         "🏦",
         "🏦 <img src='https://telegra.ph/file/39f3e25047099ad71f378.png' width='20'/> Alif Bank или <img src='https://telegra.ph/file/7e611e15399039c9179d0.png' width='20'/> Dushanbe-City"
