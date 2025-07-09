@@ -2,7 +2,7 @@ import telebot
 from telebot import types
 
 TOKEN = '7861896848:AAHJk1QcelFZ1owB0LO4XXNFflBz-WDZBIE'
-WEBAPP_ADMIN_URL = 'https://ekran-tj-admin-production-df198f.up.railway.app/admin'  # ссылка на WebApp
+WEBAPP_ADMIN_URL = 'https://worker-production-7d99.up.railway.app'  # Новый рабочий адрес
 
 bot = telebot.TeleBot(TOKEN, parse_mode='HTML')
 
@@ -22,6 +22,6 @@ def send_welcome(message):
 @bot.message_handler(content_types=['web_app_data'])
 def handle_webapp_data(message):
     data = message.web_app_data.data
-    bot.send_message(message.chat.id, f"📥 Получены данные из WebApp:\n<code>{data}</code>")
+    bot.send_message(message.chat.id, f"Вы отправили данные из WebApp: {data}")
 
-bot.polling(non_stop=True)
+bot.infinity_polling()
