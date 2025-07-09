@@ -2,19 +2,18 @@ from flask import Flask, request
 import telebot
 from telebot import types
 
-# 🔐 Токен и WebApp
-TOKEN = '7619246310:AAHloM_NMegAtxdEaYs0ZJncAGwxb74g4so'
+# 🔐 Твой токен и WebApp URL
+TOKEN = '7861896848:AAHJk1QcelFZ1owB0LO4XXNFflBz-WDZBIE'
 WEBAPP_URL = 'https://web-production-3878b.up.railway.app'
 
-# 🔧 Инициализация
 bot = telebot.TeleBot(TOKEN, parse_mode='HTML')
 app = Flask(name)
 
-# 📡 Установка webhook
+# Установка webhook
 bot.remove_webhook()
 bot.set_webhook(url=WEBAPP_URL)
 
-# ✅ Команда /start
+# Обработка команды /start
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -27,13 +26,13 @@ def send_welcome(message):
         reply_markup=markup
     )
 
-# 📩 Обработка WebApp
+# Обработка WebApp-данных
 @bot.message_handler(content_types=['web_app_data'])
 def handle_webapp_data(message):
     data = message.web_app_data.data
     bot.send_message(message.chat.id, f"📩 Получены данные из WebApp:\n{data}")
 
-# 🔍 Webhook + логирование
+# Webhook с логами
 @app.route('/', methods=['POST'])
 def webhook():
     print("🚨 Webhook вызван")
@@ -46,6 +45,6 @@ def webhook():
         print("❌ Ошибка:", e)
     return 'ok', 200
 
-# 🚀 Запуск Flask-сервера
+# Flask запуск
 if name == 'main':
     app.run(host='0.0.0.0', port=8080)
