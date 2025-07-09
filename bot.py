@@ -2,37 +2,21 @@ import telebot
 from telebot import types
 
 TOKEN = '7861896848:AAHJk1QcelFZ1owB0LO4XXNFflBz-WDZBIE'
-bot = telebot.TeleBot(TOKEN)
+WEBAPP_CATALOG_URL = 'https://ekran-tj-catalog-production.up.railway.app/'  # Вставь адрес каталога
 
-# URL WebApp для каталога товаров
-WEBAPP_CATALOG_URL = "https://ekran-webapp-production-2297.up.railway.app"
-
-# URL WebApp для админ-панели
-WEBAPP_ADMIN_URL = "https://web-production-48d37.up.railway.app"
+bot = telebot.TeleBot(TOKEN, parse_mode='HTML')
 
 @bot.message_handler(commands=['start'])
-def start(message):
+def send_welcome(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-
-    # Кнопка для каталога
-    catalog_btn = types.KeyboardButton(
-        "📱 Каталог",
-        web_app=types.WebAppInfo(url=WEBAPP_CATALOG_URL)
-    )
-
-    # Кнопка для админ-панели
-    admin_btn = types.KeyboardButton(
-        "🛠 Админ-панель",
-        web_app=types.WebAppInfo(url=WEBAPP_ADMIN_URL)
-    )
-
-    # Добавляем обе кнопки в клавиатуру
-    markup.add(catalog_btn, admin_btn)
+    catalog_button = types.KeyboardButton("📦 Каталог товаров", web_app=types.WebAppInfo(url=WEBAPP_CATALOG_URL))
+    markup.add(catalog_button)
 
     bot.send_message(
         message.chat.id,
-        "👋 Добро пожаловать! Выберите действие:",
+        "👋 <b>Хуш омадед ба мағозаи EKRAN.TJ-KBS!</b>\n\n"
+        "📲 Барои дидани <b>каталоги экранҳо</b> кнопкаро пахш кунед:",
         reply_markup=markup
     )
 
-bot.infinity_polling()
+bot.polling(non_stop=True)
