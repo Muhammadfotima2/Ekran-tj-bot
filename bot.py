@@ -1,12 +1,13 @@
+import os
 import telebot
 from telebot import types
 from flask import Flask, request
 
 TOKEN = '7861896848:AAHJk1QcelFZ1owB0LO4XXNFflBz-WDZBIE'
-WEBAPP_URL = 'https://web-production-3878b.up.railway.app'  # Адрес твоей админ-панели
+WEBAPP_URL = 'https://web-production-3878b.up.railway.app'
 
 bot = telebot.TeleBot(TOKEN, parse_mode='HTML')
-app = Flask(__name__)
+app = Flask(name)
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
@@ -33,7 +34,8 @@ def webhook():
         update = telebot.types.Update.de_json(json_str)
         bot.process_new_updates([update])
         return '', 200
-    return '', 403
+    else:
+        return '', 403
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080)
+if name == 'main':
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
