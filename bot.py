@@ -2,22 +2,36 @@ import telebot
 from telebot import types
 
 TOKEN = '7861896848:AAHJk1QcelFZ1owB0LO4XXNFflBz-WDZBIE'
-WEBAPP_URL = 'https://ekran-webapp-production-2297.up.railway.app'
-WEBAPP_ADMIN_URL = 'https://ekran-tj-admin-production-df198f.up.railway.app/admin'
+bot = telebot.TeleBot(TOKEN)
 
-bot = telebot.TeleBot(TOKEN, parse_mode='HTML')
+# URL WebApp для каталога товаров
+WEBAPP_CATALOG_URL = "https://ekran-webapp-production-2297.up.railway.app"
+
+# URL WebApp для админ-панели
+WEBAPP_ADMIN_URL = "https://web-production-48d37.up.railway.app"
 
 @bot.message_handler(commands=['start'])
-def send_welcome(message):
+def start(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    catalog_btn = types.KeyboardButton("🛍 Каталог", web_app=types.WebAppInfo(url=WEBAPP_URL))
-    admin_btn = types.KeyboardButton("🛠 Админ-панель", web_app=types.WebAppInfo(url=WEBAPP_ADMIN_URL))
+
+    # Кнопка для каталога
+    catalog_btn = types.KeyboardButton(
+        "📱 Каталог",
+        web_app=types.WebAppInfo(url=WEBAPP_CATALOG_URL)
+    )
+
+    # Кнопка для админ-панели
+    admin_btn = types.KeyboardButton(
+        "🛠 Админ-панель",
+        web_app=types.WebAppInfo(url=WEBAPP_ADMIN_URL)
+    )
+
+    # Добавляем обе кнопки в клавиатуру
     markup.add(catalog_btn, admin_btn)
 
     bot.send_message(
         message.chat.id,
-        "👋 Добро пожаловать в <b>EKRAN.TJ</b>\n\n"
-        "Нажмите кнопку ниже, чтобы открыть каталог товаров или админ-панель:",
+        "👋 Добро пожаловать! Выберите действие:",
         reply_markup=markup
     )
 
