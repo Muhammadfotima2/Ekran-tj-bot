@@ -3,7 +3,7 @@ from telebot import types
 
 TOKEN = '7861896848:AAHJk1QcelFZ1owB0LO4XXNFflBz-WDZBIE'
 WEBAPP_CATALOG_URL = 'https://ekran-webapp-production.up.railway.app'
-WEBAPP_ADMIN_URL = 'https://web-production-d190f.up.railway.app'  # Админ-панель
+WEBAPP_ADMIN_URL = "https://web-production-48d37.up.railway.app"  # Админ-панель
 ADMIN_ID = 6172156061  # Замени на свой Telegram ID
 
 bot = telebot.TeleBot(TOKEN, parse_mode='HTML')
