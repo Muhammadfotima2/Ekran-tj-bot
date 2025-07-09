@@ -1,18 +1,18 @@
 import telebot
+from telebot import types
 from flask import Flask, request
-import requests
 
 TOKEN = '7861896848:AAHJk1QcelFZ1owB0LO4XXNFflBz-WDZBIE'
-WEBHOOK_URL = 'https://ekran-tj-bot.up.railway.app/'  # Укажи свой актуальный Railway URL
+WEBAPP_URL = 'https://web-production-3878b.up.railway.app'
+WEBHOOK_URL = 'https://ekran-tj-bot.up.railway.app/'
 
 bot = telebot.TeleBot(TOKEN, parse_mode='HTML')
-app = Flask(name)
+app = Flask(__name__)
 
-# Команда /start
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
-    admin_button = telebot.types.KeyboardButton("🛠 Админ-панель")
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    admin_button = types.KeyboardButton("🛠 Админ-панель", web_app=types.WebAppInfo(url=WEBAPP_URL))
     markup.add(admin_button)
 
     bot.send_message(
@@ -22,13 +22,11 @@ def send_welcome(message):
         reply_markup=markup
     )
 
-# Обработка WebApp
 @bot.message_handler(content_types=['web_app_data'])
 def handle_webapp_data(message):
     data = message.web_app_data.data
-    bot.send_message(message.chat.id, f"🧾 Получены данные: {data}")
+    bot.send_message(message.chat.id, f"📥 Получены данные из WebApp:\n{data}")
 
-# Обработка Webhook запросов
 @app.route('/', methods=['POST'])
 def webhook():
     if request.headers.get('content-type') == 'application/json':
@@ -36,11 +34,9 @@ def webhook():
         update = telebot.types.Update.de_json(json_str)
         bot.process_new_updates([update])
         return '', 200
-    else:
-        return '', 403
+    return '', 403
 
-# Установка Webhook при запуске
-if name == 'main':
+if __name__ == '__main__':
     bot.remove_webhook()
     bot.set_webhook(url=WEBHOOK_URL)
     app.run(host='0.0.0.0', port=8080)
