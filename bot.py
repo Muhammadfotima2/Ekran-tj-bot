@@ -1,24 +1,21 @@
 import telebot
-import flask
+from telebot import types
 
 TOKEN = '7861896848:AAHJk1QcelFZ1owB0LO4XXNFflBz-WDZBIE'
-WEBHOOK_URL = 'https://worker-production-7d99.up.railway.app'  # Укажи твой Railway адрес
+WEBAPP_URL = 'https://ekran-webapp-production-2297.up.railway.app'
 
 bot = telebot.TeleBot(TOKEN, parse_mode='HTML')
-server = flask.Flask(name)
 
 @bot.message_handler(commands=['start'])
-def welcome(message):
-    bot.send_message(message.chat.id, "👋 Хуш омадед ба <b>EKRAN.TJ</b>!")
+def send_welcome(message):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    webapp_btn = types.KeyboardButton("🛍 Каталог", web_app=types.WebAppInfo(url=WEBAPP_URL))
+    markup.add(webapp_btn)
 
-@server.route('/', methods=['POST'])
-def webhook():
-    if flask.request.headers.get('content-type') == 'application/json':
-        update = telebot.types.Update.de_json(flask.request.stream.read().decode("utf-8"))
-        bot.process_new_updates([update])
-        return '', 200
-    else:
-        return '', 403
+    bot.send_message(
+        message.chat.id,
+        "👋 Добро пожаловать в <b>EKRAN.TJ</b>\n\nНажмите кнопку ниже, чтобы открыть каталог товаров:",
+        reply_markup=markup
+    )
 
-if name == 'main':
-    server.run(host='0.0.0.0', port=8080)
+bot.infinity_polling()
