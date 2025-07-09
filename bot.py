@@ -12,8 +12,9 @@ bot = telebot.TeleBot(TOKEN, parse_mode='HTML')
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    catalog_btn = types.KeyboardButton("🛍 Каталог", web_app=types.WebAppInfo(url=WEBAPP_URL))
-    markup.add(catalog_btn)
+    catalog_btn = types.WebAppInfo(url=WEBAPP_URL)
+    button = types.KeyboardButton("🛍 Каталог", web_app=catalog_btn)
+    markup.add(button)
 
     bot.send_message(
         message.chat.id,
