@@ -7,4 +7,5 @@ bot = telebot.TeleBot(TOKEN, parse_mode='HTML')
 def send_welcome(message):
     bot.reply_to(message, "👋 Привет! Бот работает ✅")
 
+bot.remove_webhook()  # ВАЖНО: отключает Webhook, чтобы polling работал
 bot.polling(non_stop=True)
