@@ -9,16 +9,19 @@ bot = telebot.TeleBot(TOKEN, parse_mode='HTML')
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    
-    admin_btn = types.KeyboardButton("🛠 Админ-панель", web_app=types.WebAppInfo(url=WEBAPP_BASE_URL + '/admin.html'))
-    catalog_btn = types.KeyboardButton("📦 Каталог товаров", web_app=types.WebAppInfo(url=WEBAPP_BASE_URL + '/catalog.html'))
 
-    markup.add(admin_btn, catalog_btn)
+    if message.from_user.id == 6172156061:  # ТОЛЬКО ты видишь админ-панель
+        admin_btn = types.KeyboardButton("🛠 Админ-панель", web_app=types.WebAppInfo(url=WEBAPP_BASE_URL + '/admin.html'))
+        markup.add(admin_btn)
+
+    catalog_btn = types.KeyboardButton("📦 Каталог товаров", web_app=types.WebAppInfo(url=WEBAPP_BASE_URL + '/catalog.html'))
+    orders_btn = types.KeyboardButton("📋 Заказы клиентов", web_app=types.WebAppInfo(url=WEBAPP_BASE_URL + '/orders.html'))
+
+    markup.add(catalog_btn, orders_btn)
 
     bot.send_message(
         message.chat.id,
-        "👋 Добро пожаловать в <b>EKRAN.TJ</b>\n\n"
-        "Выберите раздел ниже:",
+        "👋 Добро пожаловать в <b>EKRAN.TJ</b>\n\nВыберите раздел ниже:",
         reply_markup=markup
     )
 
